@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_my_app_api,access_my_app_api,model_my_app_api,base.group_user,1,1,1,1
+access_my_app_api_public,access_my_app_api_public,model_my_app_api,base.group_public,1,1,1,0
