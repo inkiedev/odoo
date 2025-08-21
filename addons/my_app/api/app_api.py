@@ -7,7 +7,6 @@ _logger = logging.getLogger(__name__)
 class AppApi(models.AbstractModel):
     _name = "my.app.api"
     _description = "APP API"
-<<<<<<< HEAD
 
     @api.model
     def authenticate(self, db, username, password):
@@ -48,15 +47,30 @@ class AppApi(models.AbstractModel):
         return partners
 
     def get_user_info(self, uid):
-=======
-    
+        user = self.env['res.users'].sudo().browse(uid)
+        if not user.exists():
+            return {'error': 'Usuario no encontrado'}
+        
+        partner = user.partner_id
+        
+        user_data = {
+            'id': user.id,
+            'login': user.login,
+            'name': user.name,
+            'email': user.email,
+            'active': user.active,
+            'partner_id': partner.id,
+            'partner_name': partner.name,
+            'partner_email': partner.email,
+            'partner_vat': partner.vat
+        }
+        
+        return user_data
     @api.model
     def get_user_data(self, uid):
->>>>>>> d08d6f9758eae9cb1d61b7ee42a4aae60093b5df
         """
         Obtiene los datos del usuario con el uid especificado.
         """
-<<<<<<< HEAD
         user = self.env["res.users"].sudo().browse(uid)
         partner = user.partner_id
         partnerData = partner.read(fields=["name", "email", "vat"])
@@ -117,24 +131,4 @@ class AppApi(models.AbstractModel):
             "user_id": new_user.id,
             "login": new_user.login,
         }
-=======
-        user = self.env['res.users'].sudo().browse(uid)
-        if not user.exists():
-            return {'error': 'Usuario no encontrado'}
         
-        partner = user.partner_id
-        
-        user_data = {
-            'id': user.id,
-            'login': user.login,
-            'name': user.name,
-            'email': user.email,
-            'active': user.active,
-            'partner_id': partner.id,
-            'partner_name': partner.name,
-            'partner_email': partner.email,
-            'partner_vat': partner.vat
-        }
-        
-        return user_data
->>>>>>> d08d6f9758eae9cb1d61b7ee42a4aae60093b5df
