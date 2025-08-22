@@ -11,29 +11,7 @@ _logger = logging.getLogger(__name__)
 class AppApi(models.AbstractModel):
     _name = "my.app.api"
     _description = "APP API"
-
-    @api.model
-    def authenticate(self, db, username, password):
-        """
-        Servicio de autenticación para la app.
-        Similar a common.authenticate pero expuesto desde un modelo.
-        """
-        # Usamos el registro de usuarios de Odoo
-        uid = self.env["res.users"].sudo().authenticate(db, username, password, {})
-        if not uid:
-            _logger.warning("❌ Falló autenticación para usuario %s", username)
-            return {
-                "success": False,
-                "message": _("Credenciales inválidas"),
-            }
-
-        _logger.info("✅ Usuario %s autenticado con UID %s", username, uid)
-        return {
-            "success": True,
-            "uid": uid,
-            "username": username,
-        }
-
+    
     @api.model
     def get_partners(self, limit=5):
         """
@@ -50,27 +28,6 @@ class AppApi(models.AbstractModel):
         )
         return partners
 
-    def get_user_info(self, uid):
-        user = self.env["res.users"].sudo().browse(uid)
-        if not user.exists():
-            return {"error": "Usuario no encontrado"}
-
-        partner = user.partner_id
-
-        user_data = {
-            "id": user.id,
-            "login": user.login,
-            "name": user.name,
-            "email": user.email,
-            "active": user.active,
-            "partner_id": partner.id,
-            "partner_name": partner.name,
-            "partner_email": partner.email,
-            "partner_vat": partner.vat,
-        }
-
-        return user_data
-
     @api.model
     def get_user_data(self, uid):
         """
@@ -78,7 +35,7 @@ class AppApi(models.AbstractModel):
         """
         user = self.env["res.users"].sudo().browse(uid)
         partner = user.partner_id
-        partnerData = partner.read(fields=["name", "email", "vat"])
+        partnerData = partner.read(fields=["vat", "name", "email", "mobile", "phone", "street", "city", "street2"])
 
         return partnerData
 
