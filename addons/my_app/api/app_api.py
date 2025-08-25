@@ -1,7 +1,7 @@
 from odoo import models, fields, exceptions, api, _
 import logging
-
 from odoo import api, models, _
+from odoo.http import request
 import secrets
 from datetime import datetime, timedelta
 
@@ -11,6 +11,36 @@ _logger = logging.getLogger(__name__)
 class AppApi(models.AbstractModel):
     _name = "my.app.api"
     _description = "APP API"
+
+    @api.model
+    def mobile_login(self, db, login, password):
+        """
+        Autentica al usuario y devuelve uid, username y session_id en JSON.
+        Funciona en apps móviles sin depender de cookies.
+        """
+        try:
+            # Autenticar sesión
+            request.session.authenticate(db, login, password)
+
+            if not request.session.uid:
+                return {
+                    "success": False,
+                    "message": "Credenciales inválidas"
+                }
+
+            return {
+                "success": True,
+                "uid": request.session.uid,
+                "username": request.env.user.login,
+                "session_id": request.session.sid,
+            }
+
+        except Exception as e:
+            _logger.exception("Error en mobile_login")
+            return {
+                "success": False,
+                "message": str(e)
+            }
     
     @api.model
     def get_partners(self, limit=5):
